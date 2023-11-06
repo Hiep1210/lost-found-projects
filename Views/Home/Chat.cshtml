@@ -1,0 +1,246 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+    <style>
+        body {
+            background-color: lightgray;
+
+        }
+
+        .body {
+            height: 90vh;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .post {
+            background-color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            padding: 10px 0;
+
+        }
+
+        .make {
+            background-color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+
+        .make i {
+            font-size: 50px;
+        }
+
+        .make-form {
+            width: 80%;
+            margin-left: 20px;
+        }
+
+        .input {
+            margin: 0 40px;
+            background-color: lightgray;
+            border-radius: 15px;
+            width: 100%;
+        }
+
+        .input p {
+            color: dimgray;
+            margin-left: 50px;
+            text-align: left;
+        }
+
+        .post-image img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .post-comment-list {
+            background-color: rgb(192, 192, 192);
+            border-radius: 5px;
+        }
+
+        .post-comment-list i {
+            font-size: 50px;
+            margin-left: 20px;
+        }
+
+        .post-comment-button {
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .post-comment-item p {
+            background-color: rgb(221, 221, 221);
+            padding: 5px;
+            border-radius: 5px;
+            color: black;
+        }
+
+        .my-comment {
+            justify-content: end;
+        }
+
+        .my-comment p {
+            color: white;
+            background-color: blue;
+        }
+
+        .dropdown-toggle::after {
+            display: none;
+        }
+
+        .post-dropdown button {
+            border: 0px;
+            background-color: rgba(255, 0, 0, 0);
+        }
+
+        .post-dropdown button i {
+            font-size: 30px;
+        }
+
+        #fullpage {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-color: black;
+        }
+        #send{
+            margin-left:5%;
+            background-color: white
+        }
+        #send:hover{
+            color: blue;
+        }
+        .post-comment-list, .col-2{
+            max-height:1102px;
+            overflow: scroll
+        }
+    </style>
+@{
+    var chatroom = ViewBag.chat;
+}
+<div class="container body">
+        <!-- Chat Section -->
+        <div class="row">
+        @if(chatroom == null)
+        {
+            <div><h1  class="text-center bg-white" style="border-radius: 5px; padding:10px">You have no contact</h1></div>
+        }
+        else
+        {
+            @if(chatroom.User1Navigation.Id == Context.Session.GetInt32("user"))
+            {
+                <div><h1  class="text-center bg-white" style="border-radius: 5px; padding:10px">You're chatting with <a asp-action="Profile" asp-route-id="@chatroom.User2Navigation.Id">@chatroom.User2Navigation.Username</a></h1></div>
+            }
+            else
+            {
+                <div><h1  class="text-center bg-white" style="border-radius: 5px; padding:10px">You're chatting with <a asp-action="Profile" asp-route-id="@chatroom.User2Navigation.Id">@chatroom.User1Navigation.Username</a></h1></div>
+            }
+        }
+            <div class="post-comment-list my-2 p-2 col-10">
+                @foreach(var mess in ViewBag.mess)
+                {
+                    @if(mess.Sender.Id == Context.Session.GetInt32("user"))
+                    {
+                        <div class="post-comment-item my-comment my-3 d-flex align-items-start">
+                                <div class="post-comment-item-text w-75 mx-2">
+                                    <p class="m-0">@mess.Mess</p>
+                                </div>
+                                <i class="material-icons navbar-item-icon">account_circle</i>
+                        </div>
+                        <p style="font-size: 0,7rem; text-align:right">@mess.Sdate</p>
+                    }else
+                    {
+                        <div class="post-comment-item my-3 d-flex align-items-start">
+                                <i class="material-icons navbar-item-icon">account_circle</i>
+                                <div class="post-comment-item-text w-75 mx-2">
+                                    <p class="m-0">@mess.Mess</p>
+                                </div>
+                        </div>
+                        <p style="font-size: 0,7rem">@mess.Sdate</p>
+                    }
+                
+                }
+            </div>
+            <div class="col-2" style="background-color:lightgray; overflow:scroll;">
+            @foreach(var list in ViewBag.chatlist)
+            {
+                @if(list.User1Navigation.Id == Context.Session.GetInt32("user")){
+                    <form asp-action="Chat" method="get" asp-route-id="@list.User2Navigation.Id">
+                    <button onclick="this.form.submit()" class="bg-white" style="border-radius:15px;border-color:white; padding:5px; text-align: center; margin: 5px 0" >
+                      <h5>chat room with @list.User2Navigation.Username</h5>
+                    </button>
+                    </form>
+                
+                }
+                else
+                {
+                    <form asp-action="Chat" method="get" asp-route-id="@list.User1Navigation.Id">
+                    <button onclick="this.form.submit()" class="bg-white" style="border-radius:15px;border-color:white; padding:5px; text-align: center; margin: 5px 0" >
+                      <h5>chat room with @list.User1Navigation.Username</h5>
+                    </button>
+                    </form>
+                }
+            }
+            </div>
+        </div>
+    @if (chatroom != null)
+    {
+        <!-- Make chat section -->
+        <div class="make d-flex justify-content-center align-items-center">
+            <img class="profile-pic"
+                src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"
+                alt="">
+            <form class="make-form" asp-action="Chat">
+                <input type="hidden" name="room" value="@chatroom.Id">
+                <div class="row">
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" placeholder="Message" name="mess">
+                    </div>
+                    <div class="col-lg-2">
+                        <input type="submit" class="form-control btn btn-primary" value="Send">
+                    </div>
+                </div>
+            </form>
+        </div>
+        }
+        <div id="fullpage" onclick="this.style.display='none';"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+        integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
+        crossorigin="anonymous"></script>
+    <script>
+        function getPics() { } //just for this demo
+        const imgs = document.querySelectorAll('img');
+        const fullPage = document.querySelector('#fullpage');
+
+        imgs.forEach(img => {
+            img.addEventListener('click', function () {
+                fullPage.style.backgroundImage = 'url(' + img.src + ')';
+                fullPage.style.display = 'block';
+            });
+        });
+    </script>

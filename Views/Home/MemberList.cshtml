@@ -1,0 +1,61 @@
+﻿@model IEnumerable<_2._LostFoundProj.Models.Account>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "MemberList";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>MemberList</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Username)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Pass)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dob)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Pass)
+            </td>
+            @if (item.Phone != null)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Phone)
+                </td>
+            }
+            else
+            {
+                <td>
+                    No contact
+                </td>    
+            }
+            <td>
+            @Html.DisplayFor(modelItem => item.Dob)
+            </td>
+            <td>
+                <a asp-action="Chat" asp-route-id="@item.Id">Contact</a> |
+                <a asp-action="Profile" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="BanUser" asp-route-id="@item.Id">Ban</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

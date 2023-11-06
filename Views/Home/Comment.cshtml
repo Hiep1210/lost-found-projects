@@ -1,0 +1,245 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+    <style>
+        body {
+            background-color: lightgray;
+
+        }
+
+        .body {
+            height: 90vh;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .post {
+            background-color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            padding: 10px 0;
+
+        }
+
+        .make {
+            background-color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+
+        .make i {
+            font-size: 50px;
+        }
+
+        .make-form {
+            width: 80%;
+            margin-left: 20px;
+        }
+
+        .input {
+            margin: 0 40px;
+            background-color: lightgray;
+            border-radius: 15px;
+            width: 100%;
+        }
+
+        .input p {
+            color: dimgray;
+            margin-left: 50px;
+            text-align: left;
+        }
+
+        .post-image img {
+            width: 480px;
+            height: 411px;
+            object-fit: cover;
+        }
+
+        .post-comment-list {
+            background-color: rgb(192, 192, 192);
+            border-radius: 5px;
+        }
+
+        .post-comment-list i {
+            font-size: 50px;
+            margin-left: 20px;
+        }
+
+        .post-comment-button {
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .post-comment-item p {
+            background-color: rgb(221, 221, 221);
+            padding: 5px;
+            border-radius: 5px;
+            color: black;
+        }
+
+        .dropdown-toggle::after {
+            display: none;
+        }
+
+        .post-dropdown button {
+            border: 0px;
+            background-color: rgba(255, 0, 0, 0);
+        }
+        .post-dropdown button i {
+            font-size: 30px;
+        }
+        a{
+            text-decoration: none;
+            color:inherit;
+        }
+        a:hover{
+            color: blue;
+            text-decoration:underline dashed;
+        }
+        #fullpage {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-color: black;
+        }
+
+    </style>
+    <div class="container body">
+        <!-- Make section -->
+        <div class="make d-flex justify-content-center align-items-center">
+            <img class="profile-pic"
+                src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"
+                alt="">
+            <form class="make-form" asp-action="CreateFound" method="get">
+                <input onclick="this.form.submit()" type="text" class="form-control" placeholder="i found this item...">
+            </form>
+        </div>
+        
+        <!-- Post Section -->
+    @{
+        var post = ViewBag.post;
+        var acc = ViewBag.acc;
+    }
+        <div class="post w-75">
+            <div class="post-body container ">
+                <div class="row">
+                    <div class="post-detail-text d-flex align-items-center">
+                        <h3 class="col-lg-11"><a asp-action="Profile" asp-route-id="@acc.Id">@acc.Username</a> posted</h3>
+                        <div class="post-dropdown" style="text-align: right">
+                            <div class="dropdown" style="width:100%;text-align:right">
+                                <button class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    @if (acc.Id == Context.Session.GetInt32("user"))
+                                    {
+                                        <a class="dropdown-item" style="color: red" asp-action="DeletePost" asp-route-id="@post.Id">Delete this post</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p>@post.PostNavigation.Postdate</p>
+                        <p>@post.PostNavigation.Caption</p>
+                    </div>
+                    <div class="post-image row d-flex justify-content-evenly">
+                    @foreach(var im in ViewBag.img){
+                            @if (im.PostId == post.PostNavigation.Id)
+                            {
+                                <div class="col-lg-6">
+                                    <img src="~/img/@im.ImgName" alt="display error" class="w-100"/>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="post-detail ">
+                        <div class="post-comment ">
+                            <div class="post-comment-number">
+                                <p style="text-align:right">@ViewBag.comment.Count comment(s)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            @foreach(var com in ViewBag.comment){
+            <div class="post-comment-list my-2 p-2" >
+                <div class="post-comment-item my-3 d-flex justify-content-center align-items-start">
+                    <i class="material-icons navbar-item-icon">account_circle</i>
+                    <p>@com.User.Username</p>
+                    <div class="post-comment-item-text w-75 mx-2">
+                        <p class="m-0">@com.Com</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <p style="font-size:20px; margin-right:15px"><a asp-action="Chat" asp-route-id="@acc.Id">Contact</a></p>
+                <p style="font-size:20px"><a asp-action="Profile" asp-route-id="@acc.Id">Profile</a></p>
+                </div>
+                
+
+            </div>
+            }
+            <div class="container d-flex align-items-center">
+                <form class="container d-flex align-items-center" asp-action="Comment" method="post">
+                <input type="hidden" value="@post.Id" name="post" />
+                <input style="width:100%" type="text" name="com" placeholder="Comment" />
+                <input type="submit" style="background-color:blue;color:white" value="Bình luận" />
+                </form>
+            </div>
+        </div>
+        <div id="fullpage" onclick="this.style.display='none';"></div>
+    </div>
+    
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+        integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
+        crossorigin="anonymous"></script>
+    <script>
+        function getPics() { } 
+        const imgs = document.querySelectorAll('img');
+        const fullPage = document.querySelector('#fullpage');
+
+        imgs.forEach(img => {
+            img.addEventListener('click', function () {
+                fullPage.style.backgroundImage = 'url(' + img.src + ')';
+                fullPage.style.display = 'block';
+            });
+        });
+    </script>
+    @if (TempData["message"] != null)
+    {
+    <script>
+        window.onload=function(){
+            alert("@TempData["message"]");
+        }
+    </script>
+    }
+    <script>
+            var commentList = button.parentNode.parentNode.parentNode.parentNode.nextElementSibling;
+            console.log(commentList);
+                commentList.style.display = "block";
+    </script>

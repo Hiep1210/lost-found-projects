@@ -1,0 +1,42 @@
+﻿@model IEnumerable<_2._LostFoundProj.Models.Post>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "ViewPost";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<style>
+    th{
+        text-align: center;
+    }
+</style>
+<h1>View your post</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PostNavigation.Postdate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PostNavigation.Caption)
+            </th>
+            <th>
+                View details
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostNavigation.Postdate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostNavigation.Caption)
+            </td>
+            <td>
+                <a asp-action="Comment" asp-route-id="@item.Id">Details</a> |
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
